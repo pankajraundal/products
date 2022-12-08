@@ -1,0 +1,6 @@
+name: Products
+type: module
+description: 'Add products.'
+core_version_requirement: ^8.9 || ^9
+dependencies:
+  - node
