@@ -1,25 +1,47 @@
 langcode: en
 status: true
 dependencies:
-    config:
-        - core.entity_view_mode.node.teaser
-        - field.field.node.products.field_description
-        - node.type.products
-    module:
-        - text
-        - user
+  config:
+    - core.entity_view_mode.node.teaser
+    - field.field.node.products.field_description
+    - field.field.node.products.field_product_image
+    - node.type.products
+  module:
+    - image
+    - text
+    - user
 id: node.products.teaser
 targetEntityType: node
 bundle: products
 mode: teaser
 content:
-    body:
-        label: hidden
-        type: text_summary_or_trimmed
-        weight: 101
-        settings:
-            trim_length: 600
-        third_party_settings: {  }
-    links:
-        weight: 100
+  body:
+    type: text_summary_or_trimmed
+    label: hidden
+    settings:
+      trim_length: 600
+    third_party_settings: {  }
+    weight: 101
+    region: content
+  field_description:
+    type: text_default
+    label: above
+    settings: {  }
+    third_party_settings: {  }
+    weight: 0
+    region: content
+  field_product_image:
+    type: image
+    label: above
+    settings:
+      image_link: ''
+      image_style: ''
+    third_party_settings: {  }
+    weight: 1
+    region: content
+  links:
+    settings: {  }
+    third_party_settings: {  }
+    weight: 2
+    region: content
 hidden: {  }

@@ -8,8 +8,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-use Drupal\Core\Block\BlockBase;
-
 /**
  * Provides a 'QR Code' Block.
  *
@@ -19,7 +17,7 @@ use Drupal\Core\Block\BlockBase;
  *   category = @Translation("Qr COde block"),
  * )
  */
-class QrCodeBlock extends BlockBase {
+class QrCodeBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
   /**
     * Match the current route.
