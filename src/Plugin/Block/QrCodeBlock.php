@@ -6,6 +6,7 @@ use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
+use Drupal\products\Service\QrCodeGenerater;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -13,8 +14,8 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  *
  * @Block(
  *   id = "qrcode_block",
- *   admin_label = @Translation("Qr COde block"),
- *   category = @Translation("Qr COde block"),
+ *   admin_label = @Translation("Qr Code block"),
+ *   category = @Translation("Qr Code block"),
  * )
  */
 class QrCodeBlock extends BlockBase implements ContainerFactoryPluginInterface {
@@ -34,14 +35,27 @@ class QrCodeBlock extends BlockBase implements ContainerFactoryPluginInterface {
   protected $currentNode;
 
   /**
+    * Qr code generater.
+    *
+    * @var \Drupal\products\Service\QrCodeGenerater;
+    */
+    protected $qrCodeGenerater;
+
+  /**
     * {@inheritdoc}
     */
-    public static function create(ContainerInterface $container, array $configuration, $plugin_id, $plugin_definition) {
+    public static function create(
+      ContainerInterface $container, 
+      array $configuration, 
+      $plugin_id, 
+      $plugin_definition
+      ) {
         return new static (
             $configuration,
             $plugin_id,
             $plugin_definition,
-            $container->get('current_route_match')
+            $container->get('current_route_match'),
+            $container->get('qr_generater')
         );
     }
 
@@ -58,22 +72,46 @@ class QrCodeBlock extends BlockBase implements ContainerFactoryPluginInterface {
    *   The current request.
    */
 
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $current_route_match)
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $current_route_match, QrCodeGenerater $qrCodeGenerater)
   {
       parent::__construct($configuration, $plugin_id, $plugin_definition);
       $this->routeMatch = $current_route_match;
       $this->currentNode = $this->routeMatch->getParameter('node');
+      $this->qrCodeGenerater = $qrCodeGenerater;
   }
 
   /**
    * {@inheritdoc}
    */
   public function build() {
-   
-        return [
-            '#markup' => $this->t('This is for QR code'),
-          ];
-    
+      
+      $link_url = $this->currentNode->field_product_link->first()->toArray()['uri'];
+      $qrCodeChillerlan = $this->qrCodeGenerater->qrGeneraterChillerlan($link_url);
+      $qrCode = $this->qrCodeGenerater->qrGenerater($link_url);
+
+      echo $qrCodeChillerlan;
+      echo "<br>-----------------------------------<br>";
+      echo $qrCode;
+     
+      return [
+        '#theme' => 'qr_code_block',
+        '#qr_code' => $qrCodeChillerlan,
+      ];
+      // return [
+      //   '#markup' => '<div style="border:3px;">
+      //     <img src="'. $qrCodeChillerlan .'" height="100" width="100"  alt="star" />
+      //   </div>
+      //   <div style="border:10px;">
+      //   <img src="'. $qrCode .'" height="100" width="100"  alt="star1" />
+      //   </div>',
+      // ]; 
+  }
+
+  /**
+   * @return int
+   */
+  public function getCacheMaxAge() {
+    return 0;
   }
 
   
