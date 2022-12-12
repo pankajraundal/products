@@ -3,7 +3,7 @@ status: true
 dependencies:
   enforced:
     module:
-      - products
+      - productswithqr
 name: 'Products'
 type: products
 description: 'Content type that can be used to add <em>Products</em>.'

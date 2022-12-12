@@ -1,6 +1,6 @@
 {
-    "name": "drupal/products",
-    "description": "This provide dependecies for product module",
+    "name": "drupal/productswithqr",
+    "description": "This provide dependecies for productwithqr module",
     "type": "drupal-custom-module",
     "authors": [
         {
@@ -9,9 +9,7 @@
         }
     ],
     "require": {
-        "endroid/qr-code": "^4.6",
-        "chillerlan/php-qrcode": "^4.3",
-        "pragmarx/google2fa-qrcode": "^3.0"
+        "chillerlan/php-qrcode": "^4.3"
     },
     "minimum-stability": "dev",
     "prefer-stable": true

@@ -1,12 +1,11 @@
 <?php
-namespace Drupal\products\Plugin\Block;
+
+namespace Drupal\productswithqr\Plugin\Block;
 
 use Drupal\Core\Block\BlockBase;
-use Drupal\Core\Entity\EntityDisplayRepositoryInterface;
-use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Routing\CurrentRouteMatch;
-use Drupal\products\Service\QrCodeGenerater;
+use Drupal\productswithqr\Service\QrCodeGenerater;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -21,43 +20,43 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class QrCodeBlock extends BlockBase implements ContainerFactoryPluginInterface {
 
   /**
-    * Match the current route.
-    *
-    * @var \Drupal\Core\Routing\CurrentRouteMatch
-    */
+   * Match the current route.
+   *
+   * @var \Drupal\Core\Routing\CurrentRouteMatch
+   */
   protected $routeMatch;
 
   /**
-    * Get the current node id
-    * 
-    * @var \Drupal\node\Entity\Node
-    */
+   * Get the current node id.
+   *
+   * @var \Drupal\node\Entity\Node
+   */
   protected $currentNode;
 
   /**
-    * Qr code generater.
-    *
-    * @var \Drupal\products\Service\QrCodeGenerater;
-    */
-    protected $qrCodeGenerater;
+   * Qr code generater.
+   *
+   * @var \Drupal\products\Service\QrCodeGenerater
+   */
+  protected $qrCodeGenerater;
 
   /**
-    * {@inheritdoc}
-    */
-    public static function create(
-      ContainerInterface $container, 
-      array $configuration, 
-      $plugin_id, 
+   * {@inheritdoc}
+   */
+  public static function create(
+      ContainerInterface $container,
+      array $configuration,
+      $plugin_id,
       $plugin_definition
       ) {
-        return new static (
-            $configuration,
-            $plugin_id,
-            $plugin_definition,
-            $container->get('current_route_match'),
-            $container->get('qr_generater')
-        );
-    }
+    return new static(
+          $configuration,
+          $plugin_id,
+          $plugin_definition,
+          $container->get('current_route_match'),
+          $container->get('qr_generater')
+      );
+  }
 
   /**
    * Creates a BLockUserInfo instance.
@@ -70,49 +69,37 @@ class QrCodeBlock extends BlockBase implements ContainerFactoryPluginInterface {
    *   The plugin implementation definition.
    * @param \Drupal\Core\Routing\CurrentRouteMatch $current_route_match
    *   The current request.
+   * @param Drupal\productswithqr\Service\QrCodeGenerater $qrCodeGenerater
+   *   Qr generator service.
    */
-
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $current_route_match, QrCodeGenerater $qrCodeGenerater)
-  {
-      parent::__construct($configuration, $plugin_id, $plugin_definition);
-      $this->routeMatch = $current_route_match;
-      $this->currentNode = $this->routeMatch->getParameter('node');
-      $this->qrCodeGenerater = $qrCodeGenerater;
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, CurrentRouteMatch $current_route_match, QrCodeGenerater $qrCodeGenerater) {
+    parent::__construct($configuration, $plugin_id, $plugin_definition);
+    $this->routeMatch = $current_route_match;
+    $this->currentNode = $this->routeMatch->getParameter('node');
+    $this->qrCodeGenerater = $qrCodeGenerater;
   }
 
   /**
    * {@inheritdoc}
    */
   public function build() {
-      
-      $link_url = $this->currentNode->field_product_link->first()->toArray()['uri'];
-      $qrCodeChillerlan = $this->qrCodeGenerater->qrGeneraterChillerlan($link_url);
-      $qrCode = $this->qrCodeGenerater->qrGenerater($link_url);
-
-      echo $qrCodeChillerlan;
-      echo "<br>-----------------------------------<br>";
-      echo $qrCode;
-     
-      return [
-        '#theme' => 'qr_code_block',
-        '#qr_code' => $qrCodeChillerlan,
-      ];
-      // return [
-      //   '#markup' => '<div style="border:3px;">
-      //     <img src="'. $qrCodeChillerlan .'" height="100" width="100"  alt="star" />
-      //   </div>
-      //   <div style="border:10px;">
-      //   <img src="'. $qrCode .'" height="100" width="100"  alt="star1" />
-      //   </div>',
-      // ]; 
+    // Get conten URL for which QR code needs to generate.
+    $link_url = $this->currentNode->field_product_link->first()->toArray()['uri'];
+    // Call qr generater service to generat qr.
+    $qrCodeChillerlan = $this->qrCodeGenerater->qrGeneraterChillerlan($link_url);
+    // Return array with template name and qr code.
+    return [
+      '#theme' => 'qr_code_block',
+      '#qr_code' => $qrCodeChillerlan,
+    ];
   }
 
   /**
-   * @return int
+   * Disable cache for this block.
    */
   public function getCacheMaxAge() {
+    // Avoid caching data uri image, this will vary product.
     return 0;
   }
 
-  
 }
