@@ -1,6 +1,20 @@
 # How to use productswithqr module.
 
-Enable module using command "drush en productswithqr"
+Git clone module under "web/modules/custom"
+refer command "git clone https://github.com/pankajraundal/productswithqr.git"
+Enable module using command 
+refer command "drush en productswithqr"
+
+## Install modules dependency
+    - Add below snippet under root composer.json refer https://sicse.dev/blog/use-composerjson-file-custom-module-install-dependent-vendor-packages
+    
+    {
+        "type": "path",
+        "url": "web/modules/custom/*"
+    }
+    - run composer require command to add module as dependency in composer.json
+    - refer command "composer require drupal/productswithqr:@dev"
+    - Clear cache, you should now good to go.
 
 ## What it does by its own
     - It will creat content type products
